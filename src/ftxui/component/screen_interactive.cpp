@@ -3,11 +3,14 @@
 #include <chrono>  // for operator-, milliseconds, duration, operator>=, time_point, common_type<>::type
 #include <csignal>  // for signal, raise, SIGTSTP, SIGABRT, SIGFPE, SIGILL, SIGINT, SIGSEGV, SIGTERM, SIGWINCH
 #include <cstdio>   // for fileno, size_t, stdin
-#include <functional>        // for function
-#include <initializer_list>  // for initializer_list
+#include <ftxui/component/task.hpp>  // for Task, Closure, AnimationTask
+#include <ftxui/screen/screen.hpp>   // for Pixel, Screen::Cursor, Screen
+#include <functional>                // for function
+#include <initializer_list>          // for initializer_list
 #include <iostream>  // for cout, ostream, basic_ostream, operator<<, endl, flush
 #include <stack>     // for stack
 #include <thread>    // for thread, sleep_for
+#include <tuple>
 #include <type_traits>  // for decay_t
 #include <utility>      // for move, swap
 #include <variant>      // for visit
@@ -17,7 +20,7 @@
 #include "ftxui/component/captured_mouse.hpp"  // for CapturedMouse, CapturedMouseInterface
 #include "ftxui/component/component_base.hpp"  // for ComponentBase
 #include "ftxui/component/event.hpp"           // for Event
-#include "ftxui/component/receiver.hpp"  // for ReceiverImpl, Sender, MakeReceiver, SenderImpl, Receiver
+#include "ftxui/component/receiver.hpp"  // for Sender, ReceiverImpl, MakeReceiver, SenderImpl, Receiver
 #include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/component/terminal_input_parser.hpp"  // for TerminalInputParser
 #include "ftxui/dom/node.hpp"                         // for Node, Render
@@ -133,6 +136,17 @@ void EventListener(std::atomic<bool>* quit, Sender<Task> out) {
   }
 }
 
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
+void ftxui_on_resize(int columns, int rows) {
+  Terminal::SetFallbackSize({
+      columns,
+      rows,
+  });
+  std::raise(SIGWINCH);
+}
+}
+
 #else
 #include <sys/time.h>  // for timeval
 
@@ -227,7 +241,8 @@ void OnExit(int signal) {
 
 const auto install_signal_handler = [](int sig, SignalHandler handler) {
   auto old_signal_handler = std::signal(sig, handler);
-  on_exit_functions.push([=] { std::signal(sig, old_signal_handler); });
+  on_exit_functions.push(
+      [=] { std::ignore = std::signal(sig, old_signal_handler); });
 };
 
 Closure g_on_resize = [] {};  // NOLINT
@@ -276,29 +291,54 @@ ScreenInteractive::ScreenInteractive(int dimx,
 
 // static
 ScreenInteractive ScreenInteractive::FixedSize(int dimx, int dimy) {
-  return ScreenInteractive(dimx, dimy, Dimension::Fixed, false);
+  return {
+      dimx,
+      dimy,
+      Dimension::Fixed,
+      false,
+  };
 }
 
 // static
 ScreenInteractive ScreenInteractive::Fullscreen() {
-  return ScreenInteractive(0, 0, Dimension::Fullscreen, true);
+  return {
+      0,
+      0,
+      Dimension::Fullscreen,
+      true,
+  };
 }
 
 // static
 ScreenInteractive ScreenInteractive::TerminalOutput() {
-  return ScreenInteractive(0, 0, Dimension::TerminalOutput, false);
+  return {
+      0,
+      0,
+      Dimension::TerminalOutput,
+      false,
+  };
 }
 
 // static
 ScreenInteractive ScreenInteractive::FitComponent() {
-  return ScreenInteractive(0, 0, Dimension::FitComponent, false);
+  return {
+      0,
+      0,
+      Dimension::FitComponent,
+      false,
+  };
 }
 
 void ScreenInteractive::Post(Task task) {
-  if (!quit_) {
-    task_sender_->Send(std::move(task));
+  // Task/Events sent toward inactive screen or screen waiting to become
+  // inactive are dropped.
+  if (!task_sender_) {
+    return;
   }
+
+  task_sender_->Send(std::move(task));
 }
+
 void ScreenInteractive::PostEvent(Event event) {
   Post(event);
 }
@@ -666,7 +706,7 @@ void ScreenInteractive::SigStop() {
     dimx_ = 0;
     dimy_ = 0;
     Flush();
-    std::raise(SIGTSTP);
+    std::ignore = std::raise(SIGTSTP);
     Install();
   });
 #endif

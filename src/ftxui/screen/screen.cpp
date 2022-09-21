@@ -56,20 +56,22 @@ void UpdatePixelStyle(std::stringstream& ss,
     return;
   }
 
+  if ((!next.bold && previous.bold) ||  //
+      (!next.dim && previous.dim)) {
+    ss << "\x1B[22m";  // BOLD_RESET and DIM_RESET
+    // We might have wrongfully reset dim or bold because they share the same
+    // resetter. Take it into account so that the side effect will cause it to
+    // be set again below.
+    previous.bold = false;
+    previous.dim = false;
+  }
+
   if (next.bold && !previous.bold) {
     ss << "\x1B[1m";  // BOLD_SET
   }
 
-  if (!next.bold && previous.bold) {
-    ss << "\x1B[22m";  // BOLD_RESET
-  }
-
   if (next.dim && !previous.dim) {
     ss << "\x1B[2m";  // DIM_SET
-  }
-
-  if (!next.dim && previous.dim) {
-    ss << "\x1B[22m";  // DIM_RESET
   }
 
   if (next.underlined && !previous.underlined) {
@@ -376,13 +378,13 @@ Dimensions Dimension::Full() {
 // static
 /// Create a screen with the given dimension along the x-axis and y-axis.
 Screen Screen::Create(Dimensions width, Dimensions height) {
-  return Screen(width.dimx, height.dimy);
+  return {width.dimx, height.dimy};
 }
 
 // static
 /// Create a screen with the given dimension.
 Screen Screen::Create(Dimensions dimension) {
-  return Screen(dimension.dimx, dimension.dimy);
+  return {dimension.dimx, dimension.dimy};
 }
 
 Screen::Screen(int dimx, int dimy)
@@ -487,8 +489,11 @@ std::string Screen::ResetPosition(bool clear) const {
 
 /// @brief Clear all the pixel from the screen.
 void Screen::Clear() {
-  pixels_ = std::vector<std::vector<Pixel>>(dimy_,
-                                            std::vector<Pixel>(dimx_, Pixel()));
+  for (auto& line : pixels_) {
+    for (auto& cell : line) {
+      cell = Pixel();
+    }
+  }
   cursor_.x = dimx_ - 1;
   cursor_.y = dimy_ - 1;
 }

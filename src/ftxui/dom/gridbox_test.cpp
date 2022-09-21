@@ -1,14 +1,13 @@
-#include <gtest/gtest-message.h>  // for Message
-#include <gtest/gtest-test-part.h>  // for SuiteApiResolver, TestFactoryImpl, TestPartResult
-#include <stddef.h>                 // for size_t
-#include <algorithm>                // for remove
-#include <string>                   // for string, allocator, basic_string
-#include <vector>                   // for vector
+#include <gtest/gtest.h>
+#include <stddef.h>   // for size_t
+#include <algorithm>  // for remove
+#include <memory>     // for shared_ptr
+#include <string>     // for allocator, basic_string, string
+#include <vector>     // for vector
 
-#include "ftxui/dom/elements.hpp"  // for text, operator|, Elements, gridbox, Element, flex, flex_grow, flex_shrink, vtext, vbox, border
+#include "ftxui/dom/elements.hpp"  // for text, operator|, Element, flex, Elements, flex_grow, flex_shrink, vtext, gridbox, vbox, focus, operator|=, border, frame
 #include "ftxui/dom/node.hpp"      // for Render
 #include "ftxui/screen/screen.hpp"  // for Screen
-#include "gtest/gtest_pred_impl.h"  // for Test, TEST, EXPECT_EQ
 
 namespace ftxui {
 
@@ -594,6 +593,25 @@ TEST(GridboxTest, MissingCells) {
             "│4││5│              \r\n"
             "╰─╯╰─╯              \r\n"
             "                    ");
+}
+
+TEST(GridboxTest, Focus) {
+  auto root = gridbox({
+      {cell("1"), cell("2"), cell("3"), cell("4")},
+      {cell("5"), cell("6"), cell("7"), cell("8")},
+      {cell("9"), cell("10"), cell("11"), cell("12")},
+      {cell("13"), cell("14") | focus, cell("15"), cell("16")},
+      {cell("17"), cell("18"), cell("19"), cell("20")},
+  });
+
+  root |= frame;
+
+  Screen screen(4, 3);
+  Render(screen, root);
+  EXPECT_EQ(screen.ToString(),
+            "╭──╮\r\n"
+            "│14│\r\n"
+            "╰──╯");
 }
 
 }  // namespace ftxui

@@ -109,6 +109,7 @@ add_library(component
   src/ftxui/component/event.cpp
   src/ftxui/component/input.cpp
   src/ftxui/component/maybe.cpp
+  src/ftxui/component/modal.cpp
   src/ftxui/component/menu.cpp
   src/ftxui/component/radiobox.cpp
   src/ftxui/component/radiobox.cpp
@@ -130,10 +131,6 @@ target_link_libraries(component
   PUBLIC dom
   PUBLIC Threads::Threads
 )
-
-set_target_properties(screen PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(dom PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(component PROPERTIES VERSION ${PROJECT_VERSION})
 
 include(cmake/ftxui_set_options.cmake)
 ftxui_set_options(screen)

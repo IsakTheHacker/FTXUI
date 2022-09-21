@@ -1,12 +1,13 @@
 #include "ftxui/dom/canvas.hpp"
 
-#include <algorithm>  // for max, min
-#include <cstdint>    // for uint8_t
-#include <cstdlib>    // for abs
-#include <map>        // for allocator, map
-#include <memory>     // for make_shared
-#include <utility>    // for move, pair
-#include <vector>     // for vector
+#include <algorithm>               // for max, min
+#include <cstdint>                 // for uint8_t
+#include <cstdlib>                 // for abs
+#include <ftxui/screen/color.hpp>  // for Color
+#include <map>                     // for map
+#include <memory>                  // for make_shared
+#include <utility>                 // for move, pair
+#include <vector>                  // for vector
 
 #include "ftxui/dom/elements.hpp"     // for Element, canvas
 #include "ftxui/dom/node.hpp"         // for Node
@@ -801,6 +802,7 @@ void Canvas::DrawText(int x,
                       const Stylizer& style) {
   for (const auto& it : Utf8ToGlyphs(value)) {
     if (!IsIn(x, y)) {
+      x += 2;
       continue;
     }
     Cell& cell = storage_[XY{x / 2, y / 4}];
@@ -871,8 +873,8 @@ Element canvas(int width, int height, std::function<void(Canvas&)> fn) {
     }
 
     void Render(Screen& screen) final {
-      int width = (box_.y_max - box_.y_min + 1) * 2;
-      int height = (box_.x_max - box_.x_min + 1) * 4;
+      int width = (box_.x_max - box_.x_min + 1) * 2;
+      int height = (box_.y_max - box_.y_min + 1) * 4;
       canvas_ = Canvas(width, height);
       fn_(canvas_);
       CanvasNodeBase::Render(screen);

@@ -1,11 +1,10 @@
-#include <gtest/gtest-message.h>  // for Message
-#include <gtest/gtest-test-part.h>  // for SuiteApiResolver, TestFactoryImpl, TestPartResult
+#include <gtest/gtest.h>
 #include <csignal>  // for raise, SIGABRT, SIGFPE, SIGILL, SIGINT, SIGSEGV, SIGTERM
+#include <ftxui/component/event.hpp>  // for Event, Event::Custom
 
 #include "ftxui/component/component.hpp"  // for Renderer
 #include "ftxui/component/screen_interactive.hpp"
-#include "ftxui/dom/elements.hpp"   // for text, Element
-#include "gtest/gtest_pred_impl.h"  // for Test, TEST, EXPECT_EQ
+#include "ftxui/dom/elements.hpp"  // for text, Element
 
 namespace ftxui {
 
@@ -45,6 +44,20 @@ TEST(ScreenInteractive, Signal_SIGABRT) {
 }
 TEST(ScreenInteractive, Signal_SIGFPE) {
   TestSignal(SIGFPE);
+}
+
+// Regression test for:
+// https://github.com/ArthurSonzogni/FTXUI/issues/402
+TEST(ScreenInteractive, PostEventToNonActive) {
+  auto screen = ScreenInteractive::FitComponent();
+  screen.Post(Event::Custom);
+}
+
+// Regression test for:
+// https://github.com/ArthurSonzogni/FTXUI/issues/402
+TEST(ScreenInteractive, PostTaskToNonActive) {
+  auto screen = ScreenInteractive::FitComponent();
+  screen.Post([] {});
 }
 
 }  // namespace ftxui

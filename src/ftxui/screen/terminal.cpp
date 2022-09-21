@@ -20,8 +20,8 @@ namespace ftxui {
 
 namespace {
 
-bool g_cached = false;
-Terminal::Color g_cached_supported_color;
+bool g_cached = false;                     // NOLINT
+Terminal::Color g_cached_supported_color;  // NOLINT
 
 Dimensions& FallbackSize() {
 #if defined(__EMSCRIPTEN__)
@@ -38,7 +38,10 @@ Dimensions& FallbackSize() {
   constexpr int fallback_width = 80;
   constexpr int fallback_height = 24;
 #endif
-  static Dimensions g_fallback_size{fallback_width, fallback_height};
+  static Dimensions g_fallback_size{
+      fallback_width,
+      fallback_height,
+  };
   return g_fallback_size;
 }
 

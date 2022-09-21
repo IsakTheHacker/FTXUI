@@ -4,6 +4,31 @@ Changelog
 current (development) 
 ---------------------
 
+### DOM
+- Bugfix: Fix `focus`/`select` when the `vbox`/`hbox`/`dbox` contains a
+  `flexbox`
+- Bugfix: Fix the selected/focused area. It used to be 1 cell larger/longer than
+  requested
+- Bugfix: Forward the selected/focused area from the child in gridbox.
+- Bugfix: Fix incorrect Canvas computed dimensions.
+- Bugfix: Support `vscroll_indicator` with a zero inner size.
+
+### Component:
+- Feature: Add the `Modal` component.
+- Feature: `Slider` supports taking references for all its arguments.
+- Feature: `Slider` supports `SliderOption`. It supports:
+    - multiple directions.
+    - multiple colors.
+    - various values (value, min, max, increment).
+- Improvement: The `Menu` keeps the focus when an entry is selected with the
+  mouse.
+- Bug: Add implementation of `ButtonOption::Border()`. It was missing.
+
+### Screen
+- Feature: add `Box::Union(a,b) -> Box`
+- Bugfix: Fix resetting `dim` clashing with resetting of `bold`.
+- Feature: Add emscripten screen resize support.
+
 3.0.0
 -----
 

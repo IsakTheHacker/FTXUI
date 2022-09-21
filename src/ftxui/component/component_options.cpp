@@ -1,5 +1,6 @@
 #include "ftxui/component/component_options.hpp"
 
+#include <ftxui/screen/color.hpp>  // for Color, Color::Black, Color::White, Color::GrayDark, Color::GrayLight
 #include <memory>   // for shared_ptr
 #include <utility>  // for move
 
@@ -143,6 +144,23 @@ ButtonOption ButtonOption::Simple() {
   return option;
 }
 
+/// @brief Create a ButtonOption. The button is shown using a border, inverted
+/// when focused. This is the current default.
+ButtonOption ButtonOption::Border() {
+  ButtonOption option;
+  option.transform = [](const EntryState& s) {
+    auto element = text(s.label) | border;
+    if (s.active) {
+      element |= bold;
+    }
+    if (s.focused) {
+      element |= inverted;
+    }
+    return element;
+  };
+  return option;
+}
+
 /// @brief Create a ButtonOption, using animated colors.
 // static
 ButtonOption ButtonOption::Animated() {
@@ -163,7 +181,13 @@ ButtonOption ButtonOption::Animated(Color color) {
 /// @brief Create a ButtonOption, using animated colors.
 // static
 ButtonOption ButtonOption::Animated(Color background, Color foreground) {
-  return ButtonOption::Animated(background, foreground, foreground, background);
+  // NOLINTBEGIN
+  return ButtonOption::Animated(
+      /*bakground=*/background,
+      /*foreground=*/foreground,
+      /*background_active=*/foreground,
+      /*foreground_active=*/background);
+  // NOLINTEND
 }
 
 /// @brief Create a ButtonOption, using animated colors.

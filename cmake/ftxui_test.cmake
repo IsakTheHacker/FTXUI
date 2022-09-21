@@ -31,8 +31,10 @@ add_executable(tests
   src/ftxui/component/container_test.cpp
   src/ftxui/component/input_test.cpp
   src/ftxui/component/menu_test.cpp
+  src/ftxui/component/modal_test.cpp
   src/ftxui/component/radiobox_test.cpp
   src/ftxui/component/receiver_test.cpp
+  src/ftxui/component/slider_test.cpp
   src/ftxui/component/resizable_split_test.cpp
   src/ftxui/component/screen_interactive_test.cpp
   src/ftxui/component/terminal_input_parser_test.cpp
@@ -69,6 +71,7 @@ target_include_directories(tests
   PRIVATE src
 )
 ftxui_set_options(tests)
+target_compile_features(tests PUBLIC cxx_std_20)
 
 include(GoogleTest)
 gtest_discover_tests(tests

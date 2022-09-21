@@ -1,12 +1,10 @@
-#include <gtest/gtest-message.h>  // for Message
-#include <gtest/gtest-test-part.h>  // for SuiteApiResolver, TestFactoryImpl, TestPartResult
-#include <string>                   // for allocator
+#include <gtest/gtest.h>
+#include <string>  // for allocator
 
 #include "ftxui/dom/elements.hpp"        // for text, flexbox
 #include "ftxui/dom/flexbox_config.hpp"  // for FlexboxConfig, FlexboxConfig::Direction, FlexboxConfig::AlignContent, FlexboxConfig::JustifyContent, FlexboxConfig::Direction::Column, FlexboxConfig::AlignItems, FlexboxConfig::JustifyContent::SpaceAround, FlexboxConfig::AlignContent::Center, FlexboxConfig::AlignContent::FlexEnd, FlexboxConfig::AlignContent::SpaceAround, FlexboxConfig::AlignContent::SpaceBetween, FlexboxConfig::AlignContent::SpaceEvenly, FlexboxConfig::AlignItems::Center, FlexboxConfig::AlignItems::FlexEnd, FlexboxConfig::Direction::ColumnInversed, FlexboxConfig::Direction::Row, FlexboxConfig::Direction::RowInversed, FlexboxConfig::JustifyContent::Center, FlexboxConfig::JustifyContent::SpaceBetween
 #include "ftxui/dom/node.hpp"            // for Render
 #include "ftxui/screen/screen.hpp"       // for Screen
-#include "gtest/gtest_pred_impl.h"       // for Test, EXPECT_EQ, TEST
 
 namespace ftxui {
 
@@ -430,6 +428,29 @@ TEST(FlexboxTest, GapY) {
             "       \r\n"
             "       \r\n"
             "       ");
+}
+
+TEST(FlexboxTest, Focus) {
+  auto document = vbox({
+                      paragraph("0 -"),
+                      paragraph("1 -"),
+                      paragraph("2 -"),
+                      paragraph("3 -"),
+                      paragraph("4 -"),
+                      paragraph("5 -"),
+                      paragraph("6 -"),
+                      paragraph("7 -") | focus,
+                      paragraph("8 -"),
+                      paragraph("9 -"),
+                  }) |
+                  yframe | flex;
+
+  Screen screen(1, 3);
+  Render(screen, document);
+  EXPECT_EQ(screen.ToString(),
+            "-\r\n"
+            "7\r\n"
+            "-");
 }
 
 }  // namespace ftxui

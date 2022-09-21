@@ -4,6 +4,9 @@ function(example name)
   target_link_libraries(ftxui_example_${name} PUBLIC ${DIRECTORY_LIB})
   file(RELATIVE_PATH dir ${EXAMPLES_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
   set_property(GLOBAL APPEND PROPERTY FTXUI::EXAMPLES ${dir}/${name})
+  set_target_properties(ftxui_example_${name} PROPERTIES
+    CXX_STANDARD 20
+  )
 endfunction(example)
 
 add_subdirectory(component)
@@ -19,6 +22,7 @@ if (EMSCRIPTEN)
   get_property(EXAMPLES GLOBAL PROPERTY FTXUI::EXAMPLES)
   foreach(file
       "index.html"
+      "sw.js"
       "run_webassembly.py")
     configure_file(${file} ${file})
   endforeach(file)

@@ -1,6 +1,5 @@
-#include <algorithm>   // for max
 #include <functional>  // for function
-#include <memory>      // for shared_ptr, allocator_traits<>::value_type
+#include <memory>      // for allocator_traits<>::value_type
 #include <utility>     // for move
 #include <vector>      // for vector
 
@@ -27,9 +26,7 @@ class RadioboxBase : public ComponentBase {
   RadioboxBase(ConstStringListRef entries,
                int* selected,
                Ref<RadioboxOption> option)
-      : entries_(entries), selected_(selected), option_(std::move(option)) {
-    hovered_ = *selected_;
-  }
+      : entries_(entries), selected_(selected), option_(std::move(option)) {}
 
  private:
   Element Render() override {
@@ -175,7 +172,7 @@ class RadioboxBase : public ComponentBase {
 
   ConstStringListRef entries_;
   int* selected_;
-  int hovered_;
+  int hovered_ = *selected_;
   std::vector<Box> boxes_;
   Box box_;
   Ref<RadioboxOption> option_;

@@ -9,9 +9,14 @@ TEST(StringTest, StringWidth) {
   EXPECT_EQ(0, string_width(""));
   EXPECT_EQ(1, string_width("a"));
   EXPECT_EQ(2, string_width("ab"));
+  EXPECT_EQ(1, string_width("⬤"));
+
   // Fullwidth glyphs:
   EXPECT_EQ(2, string_width("测"));
   EXPECT_EQ(4, string_width("测试"));
+  EXPECT_EQ(2, string_width("⚫"));
+  EXPECT_EQ(2, string_width("🪐"));
+
   // Combining characters:
   EXPECT_EQ(1, string_width("ā"));
   EXPECT_EQ(1, string_width("a⃒"));
@@ -115,6 +120,44 @@ TEST(StringTest, CellToGlyphIndex) {
   EXPECT_EQ(combining[0], 0);
   EXPECT_EQ(combining[1], 1);
   EXPECT_EQ(combining[2], 2);
+}
+
+TEST(StringTest, Utf8ToWordBreakProperty) {
+  using T = std::vector<WordBreakProperty>;
+  using P = WordBreakProperty;
+  EXPECT_EQ(Utf8ToWordBreakProperty("a"), T({P::ALetter}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("0"), T({P::Numeric}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("א"), T({P::Hebrew_Letter}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("ㇰ"), T({P::Katakana}));
+  EXPECT_EQ(Utf8ToWordBreakProperty(" "), T({P::WSegSpace}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("\""), T({P::Double_Quote}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("'"), T({P::Single_Quote}));
+  EXPECT_EQ(Utf8ToWordBreakProperty(":"), T({P::MidLetter}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("."), T({P::MidNumLet}));
+  EXPECT_EQ(Utf8ToWordBreakProperty("\r"), T({}));  // FIXME
+  EXPECT_EQ(Utf8ToWordBreakProperty("\n"), T({}));  // FIXME
+}
+
+TEST(StringTest, to_string) {
+  EXPECT_EQ(to_string(L"hello"), "hello");
+  EXPECT_EQ(to_string(L"€"), "€");
+  EXPECT_EQ(to_string(L"ÿ"), "ÿ");
+  EXPECT_EQ(to_string(L"߿"), "߿");
+  EXPECT_EQ(to_string(L"ɰɱ"), "ɰɱ");
+  EXPECT_EQ(to_string(L"«»"), "«»");
+  EXPECT_EQ(to_string(L"嵰嵲嵫"), "嵰嵲嵫");
+  EXPECT_EQ(to_string(L"🎅🎄"), "🎅🎄");
+}
+
+TEST(StringTest, to_wstring) {
+  EXPECT_EQ(to_wstring(std::string("hello")), L"hello");
+  EXPECT_EQ(to_wstring(std::string("€")), L"€");
+  EXPECT_EQ(to_wstring(std::string("ÿ")), L"ÿ");
+  EXPECT_EQ(to_wstring(std::string("߿")), L"߿");
+  EXPECT_EQ(to_wstring(std::string("ɰɱ")), L"ɰɱ");
+  EXPECT_EQ(to_wstring(std::string("«»")), L"«»");
+  EXPECT_EQ(to_wstring(std::string("嵰嵲嵫")), L"嵰嵲嵫");
+  EXPECT_EQ(to_wstring(std::string("🎅🎄")), L"🎅🎄");
 }
 
 }  // namespace ftxui

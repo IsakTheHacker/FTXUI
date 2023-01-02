@@ -1,6 +1,7 @@
 #include <algorithm>                              // for max, min
 #include <ftxui/component/component_options.hpp>  // for SliderOption
 #include <string>                                 // for allocator
+#include <utility>                                // for move
 
 #include "ftxui/component/captured_mouse.hpp"  // for CapturedMouse
 #include "ftxui/component/component.hpp"       // for Make, Slider
@@ -12,7 +13,7 @@
 #include "ftxui/screen/box.hpp"    // for Box
 #include "ftxui/screen/color.hpp"  // for Color, Color::GrayDark, Color::White
 #include "ftxui/screen/util.hpp"   // for clamp
-#include "ftxui/util/ref.hpp"      // for ConstRef, ConstStringRef, Ref
+#include "ftxui/util/ref.hpp"      // for ConstRef, Ref, ConstStringRef
 
 namespace ftxui {
 
@@ -43,7 +44,7 @@ class SliderBase : public ComponentBase {
   Element Render() override {
     auto gauge_color = Focused() ? color(options_->color_active)
                                  : color(options_->color_inactive);
-    float percent = float(value_() - min_()) / float(max_() - min_());
+    const float percent = float(value_() - min_()) / float(max_() - min_());
     return gaugeDirection(percent, options_->direction) |
            flexDirection(options_->direction) | reflect(gauge_box_) |
            gauge_color;
@@ -324,9 +325,18 @@ template <typename T>
 Component Slider(SliderOption<T> options) {
   return Make<SliderBase<T>>(options);
 }
-template Component Slider(SliderOption<int> options);
-template Component Slider(SliderOption<float> options);
-template Component Slider(SliderOption<long> options);
+template Component Slider(SliderOption<int8_t>);
+template Component Slider(SliderOption<int16_t>);
+template Component Slider(SliderOption<int32_t>);
+template Component Slider(SliderOption<int64_t>);
+
+template Component Slider(SliderOption<uint8_t>);
+template Component Slider(SliderOption<uint16_t>);
+template Component Slider(SliderOption<uint32_t>);
+template Component Slider(SliderOption<uint64_t>);
+
+template Component Slider(SliderOption<float>);
+template Component Slider(SliderOption<double>);
 
 }  // namespace ftxui
 

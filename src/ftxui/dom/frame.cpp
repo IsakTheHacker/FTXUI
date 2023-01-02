@@ -71,7 +71,11 @@ class Focus : public Select {
     // https://github.com/microsoft/terminal/issues/1203
     // https://github.com/microsoft/terminal/issues/3093
 #if !defined(FTXUI_MICROSOFT_TERMINAL_FALLBACK)
-    screen.SetCursor(Screen::Cursor{box_.x_min, box_.y_min});
+    screen.SetCursor(Screen::Cursor{
+        box_.x_min,
+        box_.y_min,
+        Screen::Cursor::Shape::Hidden,
+    });
 #endif
   }
 };
@@ -98,9 +102,9 @@ class Frame : public Node {
     Box children_box = box;
 
     if (x_frame_) {
-      int external_dimx = box.x_max - box.x_min;
-      int internal_dimx = std::max(requirement_.min_x, external_dimx);
-      int focused_dimx = selected_box.x_max - selected_box.x_min;
+      const int external_dimx = box.x_max - box.x_min;
+      const int internal_dimx = std::max(requirement_.min_x, external_dimx);
+      const int focused_dimx = selected_box.x_max - selected_box.x_min;
       int dx = selected_box.x_min - external_dimx / 2 + focused_dimx / 2;
       dx = std::max(0, std::min(internal_dimx - external_dimx - 1, dx));
       children_box.x_min = box.x_min - dx;
@@ -108,9 +112,9 @@ class Frame : public Node {
     }
 
     if (y_frame_) {
-      int external_dimy = box.y_max - box.y_min;
-      int internal_dimy = std::max(requirement_.min_y, external_dimy);
-      int focused_dimy = selected_box.y_max - selected_box.y_min;
+      const int external_dimy = box.y_max - box.y_min;
+      const int internal_dimy = std::max(requirement_.min_y, external_dimy);
+      const int focused_dimy = selected_box.y_max - selected_box.y_min;
       int dy = selected_box.y_min - external_dimy / 2 + focused_dimy / 2;
       dy = std::max(0, std::min(internal_dimy - external_dimy - 1, dy));
       children_box.y_min = box.y_min - dy;
@@ -121,8 +125,8 @@ class Frame : public Node {
   }
 
   void Render(Screen& screen) override {
-    AutoReset<Box> stencil(&screen.stencil,
-                           Box::Intersection(box_, screen.stencil));
+    const AutoReset<Box> stencil(&screen.stencil,
+                                 Box::Intersection(box_, screen.stencil));
     children_[0]->Render(screen);
   }
 
@@ -145,6 +149,48 @@ Element xframe(Element child) {
 
 Element yframe(Element child) {
   return std::make_shared<Frame>(unpack(std::move(child)), false, true);
+}
+
+class FocusCursor : public Focus {
+ public:
+  FocusCursor(Elements children, Screen::Cursor::Shape shape)
+      : Focus(std::move(children)), shape_(shape) {}
+
+ private:
+  void Render(Screen& screen) override {
+    Select::Render(screen);  // NOLINT
+    screen.SetCursor(Screen::Cursor{
+        box_.x_min,
+        box_.y_min,
+        shape_,
+    });
+  }
+  Screen::Cursor::Shape shape_;
+};
+
+Element focusCursorBlock(Element child) {
+  return std::make_shared<FocusCursor>(unpack(std::move(child)),
+                                       Screen::Cursor::Block);
+}
+Element focusCursorBlockBlinking(Element child) {
+  return std::make_shared<FocusCursor>(unpack(std::move(child)),
+                                       Screen::Cursor::BlockBlinking);
+}
+Element focusCursorBar(Element child) {
+  return std::make_shared<FocusCursor>(unpack(std::move(child)),
+                                       Screen::Cursor::Bar);
+}
+Element focusCursorBarBlinking(Element child) {
+  return std::make_shared<FocusCursor>(unpack(std::move(child)),
+                                       Screen::Cursor::BarBlinking);
+}
+Element focusCursorUnderline(Element child) {
+  return std::make_shared<FocusCursor>(unpack(std::move(child)),
+                                       Screen::Cursor::Underline);
+}
+Element focusCursorUnderlineBlinking(Element child) {
+  return std::make_shared<FocusCursor>(unpack(std::move(child)),
+                                       Screen::Cursor::UnderlineBlinking);
 }
 
 }  // namespace ftxui

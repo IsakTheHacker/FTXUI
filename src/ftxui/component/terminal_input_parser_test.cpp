@@ -302,7 +302,7 @@ TEST(Event, Control) {
   };
   std::vector<TestCase> cases;
   for (int i = 0; i < 32; ++i) {
-    if (i == 13 || i == 24 || i == 26 || i == 27)
+    if (i == 8 || i == 13 || i == 24 || i == 26 || i == 27)
       continue;
     cases.push_back({char(i), false});
   }
@@ -342,22 +342,24 @@ TEST(Event, Special) {
       {str("\x1B[A"), Event::ArrowUp},
       {str("\x1B[B"), Event::ArrowDown},
       {{127}, Event::Backspace},
+      // Quirk for: https://github.com/ArthurSonzogni/FTXUI/issues/508
+      {{8}, Event::Backspace},
       {str("\x1B[3~"), Event::Delete},
       //{str("\x1B"), Event::Escape},
       {{10}, Event::Return},
       {{9}, Event::Tab},
       {{27, 91, 90}, Event::TabReverse},
-      //{str("\x1B[OP"), Event::F1},
-      //{str("\x1B[OQ"), Event::F2},
-      //{str("\x1B[OR"), Event::F3},
-      //{str("\x1B[OS"), Event::F4},
+      {str("\x1BOP"), Event::F1},
+      {str("\x1BOQ"), Event::F2},
+      {str("\x1BOR"), Event::F3},
+      {str("\x1BOS"), Event::F4},
       {str("\x1B[15~"), Event::F5},
       {str("\x1B[17~"), Event::F6},
       {str("\x1B[18~"), Event::F7},
       {str("\x1B[19~"), Event::F8},
       {str("\x1B[20~"), Event::F9},
       {str("\x1B[21~"), Event::F10},
-      {str("\x1B[21~"), Event::F11},
+      {str("\x1B[23~"), Event::F11},
       {str("\x1B[24~"), Event::F12},
       {{27, 91, 72}, Event::Home},
       {{27, 91, 70}, Event::End},

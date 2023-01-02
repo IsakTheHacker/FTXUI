@@ -93,6 +93,7 @@ add_library(component
   include/ftxui/component/component_base.hpp
   include/ftxui/component/component_options.hpp
   include/ftxui/component/event.hpp
+  include/ftxui/component/loop.hpp
   include/ftxui/component/mouse.hpp
   include/ftxui/component/receiver.hpp
   include/ftxui/component/screen_interactive.hpp
@@ -107,10 +108,12 @@ add_library(component
   src/ftxui/component/container.cpp
   src/ftxui/component/dropdown.cpp
   src/ftxui/component/event.cpp
+  src/ftxui/component/hoverable.cpp
   src/ftxui/component/input.cpp
+  src/ftxui/component/loop.cpp
   src/ftxui/component/maybe.cpp
-  src/ftxui/component/modal.cpp
   src/ftxui/component/menu.cpp
+  src/ftxui/component/modal.cpp
   src/ftxui/component/radiobox.cpp
   src/ftxui/component/radiobox.cpp
   src/ftxui/component/renderer.cpp

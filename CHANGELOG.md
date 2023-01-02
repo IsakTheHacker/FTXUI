@@ -5,6 +5,13 @@ current (development)
 ---------------------
 
 ### DOM
+- Feature: Customize the cursor. Add the following decorators:
+  - `focusCursorBlock`
+  - `focusCursorBlockBlinking`
+  - `focusCursorBar`
+  - `focusCursorBarBlinking`
+  - `focusCursorUnderline`
+  - `focusCursorUnderlineBlinking`
 - Bugfix: Fix `focus`/`select` when the `vbox`/`hbox`/`dbox` contains a
   `flexbox`
 - Bugfix: Fix the selected/focused area. It used to be 1 cell larger/longer than
@@ -20,14 +27,24 @@ current (development)
     - multiple directions.
     - multiple colors.
     - various values (value, min, max, increment).
+- Feature: Define `ScreenInteractive::Exit()`.
+- Feature: Add `Loop` to give developers a better control on the main loop. This
+  can be used to integrate FTXUI into another main loop, without taking the full
+  control.
+- Feature: `Input` supports CTRL+Left and CTRL+Right
+- Feature: Use a blinking bar in the `Input` component.
 - Improvement: The `Menu` keeps the focus when an entry is selected with the
   mouse.
-- Bug: Add implementation of `ButtonOption::Border()`. It was missing.
+- Bugfix: Add implementation of `ButtonOption::Border()`. It was missing.
+- Bugfix: Provide the correct key for F1-F4 and F11.
+- Feature: Add the `Hoverable` component decorators.
 
 ### Screen
 - Feature: add `Box::Union(a,b) -> Box`
 - Bugfix: Fix resetting `dim` clashing with resetting of `bold`.
 - Feature: Add emscripten screen resize support.
+- Bugfix: Add unicode 13 support for full width characters.
+- Bugfix: Fix MSVC treating codecvt C++17 deprecated function as an error.
 
 3.0.0
 -----

@@ -79,9 +79,11 @@ add_library(dom
   src/ftxui/dom/separator.cpp
   src/ftxui/dom/size.cpp
   src/ftxui/dom/spinner.cpp
+  src/ftxui/dom/strikethrough.cpp
   src/ftxui/dom/table.cpp
   src/ftxui/dom/text.cpp
   src/ftxui/dom/underlined.cpp
+  src/ftxui/dom/underlined_double.cpp
   src/ftxui/dom/util.cpp
   src/ftxui/dom/vbox.cpp
 )
@@ -145,22 +147,13 @@ ftxui_check_coverage(screen)
 ftxui_check_coverage(dom)
 ftxui_check_coverage(component)
 
-if (FTXUI_BUILD_TESTS AND ${CMAKE_VERSION} VERSION_GREATER "3.11.4")
-  include(cmake/ftxui_test.cmake)
-endif()
-
-if(FTXUI_BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif()
-
-if(FTXUI_BUILD_DOCS)
-  add_subdirectory(doc)
-endif()
-
+include(cmake/ftxui_test.cmake)
+include(cmake/ftxui_benchmark.cmake)
+include(cmake/ftxui_fuzzer.cmake)
 include(cmake/iwyu.cmake)
 include(cmake/ftxui_export.cmake)
+include(cmake/ftxui_install.cmake)
+include(cmake/ftxui_package.cmake)
 
-if(FTXUI_ENABLE_INSTALL)
-  include(cmake/ftxui_install.cmake)
-  include(cmake/ftxui_package.cmake)
-endif()
+add_subdirectory(examples)
+add_subdirectory(doc)

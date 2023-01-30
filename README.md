@@ -122,7 +122,9 @@ An element can be decorated using the functions:
   - `dim`
   - `inverted`
   - `underlined`
+  - `underlinedDouble`
   - `blink`
+  - `strikethrough`
   - `color`
   - `bgcolor`
 
@@ -364,7 +366,7 @@ endif()
 ```
 
 If you don't, the following packages have been created:
-- [vcpkg](https://vcpkg.info/port/ftxui)
+- [vcpkg](https://vcpkgx.com/details.html?package=ftxui)
 - [Arch Linux PKGBUILD](https://aur.archlinux.org/packages/ftxui-git/).
 - [conan.io](https://conan.io/center/ftxui)
 

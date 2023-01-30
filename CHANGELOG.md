@@ -5,6 +5,9 @@ current (development)
 ---------------------
 
 ### DOM
+- Feature: more styles:
+  - `strikethrough`
+  - `underlinedDouble`
 - Feature: Customize the cursor. Add the following decorators:
   - `focusCursorBlock`
   - `focusCursorBlockBlinking`
@@ -45,6 +48,9 @@ current (development)
 - Feature: Add emscripten screen resize support.
 - Bugfix: Add unicode 13 support for full width characters.
 - Bugfix: Fix MSVC treating codecvt C++17 deprecated function as an error.
+
+### Build
+- Support using the google test version provided by the package manager.
 
 3.0.0
 -----
